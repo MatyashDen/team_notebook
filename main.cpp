@@ -3060,6 +3060,69 @@ void solve() {
         }
     }
 }
+/////////////////////////////////////////////////////////////////////////
+@Dan
+// block cut tree
+// Tested on Uzhhorod 2020. Day 2. Tsypko
+
+vll graph[N];
+ll fup[N];
+ll timer = 0;
+ll tin[N];
+ll used[N];
+
+vll graph_bct[N];
+ll isArt[N];
+
+vll vec;
+ll n;
+
+void addComp(vll &v) {
+    for (auto c : v) {
+        graph_bct[c].pb(n);
+        graph_bct[n].pb(c);
+    }
+    
+    n++;
+}
+
+
+void dfs_bct(ll a = 0, ll p = -1) {
+    used[a] = 1;
+    
+    fup[a] = tin[a] = ++timer;
+    vec.pb(a);
+    
+    for (auto c : graph[a]) {
+        if (c != p) {
+            if (!used[c]) {
+                dfs_bct(c);
+                
+                fup[a] = min(fup[a], fup[c]);
+                
+                if (fup[c] >= tin[a]) { // a - cut vertex
+                    isArt[a] = 1;
+                    vll comp;
+                    
+                    comp.pb(a);
+                    while (comp.back() != c) {
+                        comp.pb(vec.back());
+                        vec.pop_back();
+                    }
+                    
+                    addComp(comp);
+                }
+            } else {
+                fup[a] = min(fup[a], tin[c]);
+            }
+        }
+    }
+}
+
+void buildBCT() {
+    dfs_bct();
+}
+
 ///////////////////////////////////////////////////////////////////////////
 START VANYA START VANYA START VANYA START VANYA START VANYA START VANYA START VANYA START VANYA
 
