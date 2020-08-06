@@ -2868,6 +2868,7 @@ struct SegmentTree {
 private:
     vll t;
     vll toAdd;
+    ll n;
  
     ll merge(ll a, ll b) {
         return min(a, b);
@@ -2930,10 +2931,10 @@ private:
  
         push(it);
  
-        add(l, m, ql, min(qr, m), val, it * 2 + 1);
-        add(m + 1, r, max(m + 1, ql), qr, val, it * 2 + 2);
+        change(l, m, ql, min(qr, m), val, it * 2 + 1);
+        change(m + 1, r, max(m + 1, ql), qr, val, it * 2 + 2);
  
-           pull(it);
+        pull(it);
     }
 public:
    SegmentTree(ll _n) {
@@ -2943,7 +2944,9 @@ public:
     }
  
     void change(ll l, ll r, ll val) {
-        add(0, n - 1, l, r, val, 0);
+        if (l > r)
+            swap(l, r);
+        change(0, n - 1, l, r, val, 0);
     }
  
     ll query(ll l, ll r) {
