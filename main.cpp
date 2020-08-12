@@ -967,6 +967,104 @@ void dfs(ll v) {
 ////////////////////////////////////////////////
  
 ////////////////////////////////////////////////
+@Bohdan
+// Min cost max flow algorithm 
+// Tested on Problem G from 6-th day Uzhgorod 2020
+// Source: https://sites.google.com/site/indy256/algo_cpp/min_cost_flow
+
+struct Edge {
+    ll to, f, cap, cost, rev;
+};
+
+struct MinCostMaxFlow {
+    ll n;
+    vector<ll> prio, curflow, prevedge, prevnode, q, pot, inqueue;
+    vector<vector<Edge>> graph;
+
+    MinCostMaxFlow(ll cntNodes) {
+        n = cntNodes;
+        prio.resize(n, 0);
+        curflow.resize(n, 0);
+        prevedge.resize(n, 0);
+        prevnode.resize(n, 0);
+        q.resize(n, 0);
+        pot.resize(n, 0);
+        inqueue.resize(n, 0);
+        graph.resize(n);
+    }
+
+    void addEdge(int s, int t, int cap, int cost) {
+        Edge a = {t, 0, cap, cost, (ll)graph[t].size()};
+        Edge b = {s, 0, 0, -cost, (ll)graph[s].size()};
+        graph[s].push_back(a);
+        graph[t].push_back(b);
+    }
+
+    void printGraph() {
+        for (ll i = 0; i < n; ++i) {
+            if (!graph[i].empty()) {
+                cout << "from i : " << i << endl;
+                for (auto e : graph[i]) {
+                }
+            }
+        }
+    }
+
+    pll findMinCostFlow(ll s, ll t, ll maxf) {
+        ll flow = 0;
+        ll flowCost = 0;
+        while (flow < maxf) {
+            priority_queue<pll, vector<pll>, greater<pll> > q;
+            q.push(make_pair(0LL, s));
+            prio.assign(n, 1e18);
+
+            prio[s] = 0;
+            curflow[s] = 1e18;
+            while (!q.empty()) {
+                pll cur = q.top();
+                ll d = cur.first;
+                ll u = cur.second;
+                q.pop();
+                if (d != prio[u]) continue;
+
+                for (ll i = 0; i < graph[u].size(); i++) {
+                    Edge &e = graph[u][i];
+                    ll v = e.to;
+                    if (e.cap <= e.f) continue;
+                    ll nprio = prio[u] + e.cost + pot[u] - pot[v];
+                    if (prio[v] > nprio) {
+                        prio[v] = nprio;
+                        q.push(make_pair(nprio, v));
+                        prevnode[v] = u;
+                        prevedge[v] = i;
+                        curflow[v] = std::min(curflow[u], e.cap - e.f);
+                    }
+                }
+            }
+
+            if (prio[t] == 1e18)
+                break;
+
+            for (ll i = 0; i < n; i++)
+                pot[i] += prio[i];
+
+            ll df = min(curflow[t], maxf - flow);
+            flow += df;
+            for (ll v = t; v != s; v = prevnode[v]) {
+                Edge &e = graph[prevnode[v]][prevedge[v]];
+                e.f += df;
+                graph[v][e.rev].f -= df;
+                flowCost += df * e.cost;
+            }
+        }
+        return make_pair(flow, flowCost);
+    }
+};
+
+////////////////////////////////////////////////
+
+////////////////////////////////////////////////
+
 @Bogdan
 Fast read
  
