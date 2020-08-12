@@ -818,6 +818,126 @@ bool cmp(string findStr, string str) {
 ////////////////////////////////////////////////
  
 ////////////////////////////////////////////////
+@Bohdan
+// Dinic algorithm (finding maximum flow)
+// https://official.contest.yandex.com/mw2020prefinals/contest/18054
+ 
+const ll INF = 1e18;
+
+struct edge {
+    ll a, b, cap, flow;
+};
+
+struct Dinic {
+    ll n, s, t;
+    vll d, ptr, q, used;
+    vector<edge> e;
+    vector<vll> g;
+
+    Dinic(ll sz, ll source, ll think) {
+        n = sz;
+        s = source;
+        t = think;
+        d.resize(sz, 0);
+        ptr.resize(sz, 0);
+        q.resize(sz, 0);
+        used.resize(sz, 0);
+        g.resize(sz);
+    }
+
+    void add_edge(ll a, ll b, ll cap) {
+        edge e1 = {a, b, cap, 0};
+        edge e2 = {b, a, 0, 0};
+        g[a].push_back(e.size());
+        e.push_back(e1);
+        g[b].push_back(e.size());
+        e.push_back(e2);
+    }
+
+    bool bfs() {
+        ll qh = 0, qt = 0;
+        q[qt++] = s;
+        d.assign(n, -1);
+        d[s] = 0;
+        while (qh < qt && d[t] == -1) {
+            ll v = q[qh++];
+            for (size_t i=0; i < g[v].size(); ++i) {
+                ll id = g[v][i], to = e[id].b;
+                if (d[to] == -1 && e[id].flow < e[id].cap) {
+                    q[qt++] = to;
+                    d[to] = d[v] + 1;
+                }
+            }
+        }
+        return d[t] != -1;
+    }
+
+    ll dfs(ll v, ll flow) {
+        if (!flow) return 0;
+        if (v == t) return flow;
+        for (; ptr[v] < g[v].size(); ++ptr[v]) {
+            ll id = g[v][ptr[v]], to = e[id].b;
+            if (d[to] != d[v] + 1) continue;
+            ll pushed = dfs(to, min(flow, e[id].cap - e[id].flow));
+            if (pushed) {
+                e[id].flow += pushed;
+                e[id^1].flow -= pushed;
+                return pushed;
+            }
+        }
+        return 0;
+    }
+
+    ll findMaxFlow() {
+        ll flow = 0;
+        for (;;) {
+            if (!bfs())  break;
+            ptr.assign(n, 0);
+            while (ll pushed = dfs (s, INF)) flow += pushed;
+        }
+        return flow;
+    }
+
+    vll path;
+    ll gl = 1;
+    vvll decompose() {
+        vvll ans;
+        ll flow = dfsDecomp(s);
+        while (flow) {
+            gl++;
+            reverse(path.begin(), path.end());
+            ans.pb(path);
+            path.clear();
+            flow = dfsDecomp(s);
+        }
+        return ans;
+    }
+
+    ll dfsDecomp(ll v, ll curflow = INF) {
+        if (curflow <= 0) return 0;
+        if (v == t) return curflow;
+        if (used[v] == gl) return 0;
+        used[v] = gl;
+
+        for (auto j : g[v]) {
+            auto &i = e[j];
+            if (i.flow) {
+                ll cur = dfsDecomp(i.b, min(curflow, i.flow));
+                if (cur) {
+                    i.flow -= cur;
+                    path.push_back(v + 1);
+                    return cur;
+                }
+            }
+        }
+        return 0;
+    }
+};
+
+
+////////////////////////////////////////////////
+
+////////////////////////////////////////////////
 @Bogdan
 Non - recursive dfs
  
