@@ -3716,3 +3716,29 @@ for((i = 1; ; ++i)); do
     diff -w out1 out2 || break
     diff -w <(./main < int) <(./brute < int) || break
 done
+
+////////////////////////////////////////////////////////////////////////////////////////////
+s.sh by Karavaiev:
+
+clang++ -std=c++11 -stdlib=libc++ ../MainSolution/main.cpp -o main
+clang++ -std=c++11 -stdlib=libc++ ../BruteSolution/main.cpp -o brute
+clang++ -std=c++11 -stdlib=libc++ ../Generator/main.cpp -o gen
+
+for ((i = 1; ; ++i)); do
+    echo $i
+    {
+        ./gen $i > int
+        ./main < int > out1
+    } || {
+        break
+    }
+    ./brute < int > out2
+    if !(cmp -s out1 out2); then
+        echo -e "\nGAME OVER: $i\n"
+        echo -e "test:\n" && cat int && echo -e ""
+        echo -e "main:\n" && cat out1 && echo -e ""
+        echo -e "brute:\n" && cat out2 && echo -e ""
+        break
+    fi
+done
+
