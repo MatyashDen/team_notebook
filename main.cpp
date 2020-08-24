@@ -2937,7 +2937,7 @@ pt intersection(Line l1, Line l2) {
 ld dstFromPtToLine(Line l, pt p) {
     return abs(l.a * p.x + l.b * p.y + l.c) / sqrt(sqr(l.a) + sqr(l.b));
 }
- 
+
 struct Rect {
     pt a, b, c, d;
  
@@ -2977,7 +2977,37 @@ ld findArea(vector <pt> &poly) {
     }
     return abs(ans) / 2;
 }
- 
+
+// Rect intersection
+// tested on https://codeforces.com/contest/1216/problem/C
+
+struct Rect {
+    pt a, b;
+    
+    void scan() {
+        a.scan();
+        b.scan();
+    }
+    
+    ll getS() {
+        return abs(a.x - b.x) * abs(a.y - b.y);
+    }
+};
+
+Rect intersection(Rect a, Rect b) {
+    ll l = max(min(a.a.x, a.b.x), min(b.a.x, b.b.x));
+    ll r = min(max(a.a.x, a.b.x), max(b.a.x, b.b.x));
+    
+    ll d = max(min(a.a.y, a.b.y), min(b.a.y, b.b.y));
+    ll u = min(max(a.a.y, a.b.y), max(b.a.y, b.b.y));
+    
+    if (l >= r || d >= u) {
+        return Rect{{0, 0}, {0, 0}};
+    }
+    
+    return Rect {{l, d}, {r, u}};
+}
+
 ///////////////////////////////////////////////////////////
 @Den
 // bit trie
@@ -3037,7 +3067,7 @@ ll findMin(ll x, vector <Vertex> &trie) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @Den
 // Convex hull trick
- 
+
 struct line {
     ll k, b;
  
