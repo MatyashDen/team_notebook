@@ -572,14 +572,14 @@ Graphs find bridges
 void dfs(int v, int p){
     s[v] = up[v] = timer++;
     for(auto vertex : g[v]){
+        if (vertex == p) continue;
         if(s[vertex] == 0){
             dfs(vertex, v);
             up[v] = min(up[v], up[vertex]);
             if(up[vertex] > s[v]){
-                bridges.insert(mp[Edge(v, vertex)]);
+                isBridge[getId(vertex, v)] = 1;
             }
-        }
-        else {
+        } else {
             up[v] = min(up[v], s[vertex]);
         }
     }
