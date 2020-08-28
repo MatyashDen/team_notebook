@@ -3373,6 +3373,48 @@ void dfs_bct(ll a = 0, ll p = -1) {
 void buildBCT() {
     dfs_bct();
 }
+///////////////////////////////////////////////////////////////////////////
+@Den
+// Small to large (number of different colors in subtree)
+
+vll graph[N];
+
+set <ll> *pointers[N];
+
+ll col[N], res[N];
+
+void dfs(ll a) {
+    if (graph[a].empty()) {
+        pointers[a] = new set <ll>();
+        pointers[a]->insert(col[a]);
+
+        res[a] = 1;
+
+        return;
+    }
+
+    for (auto c : graph[a])
+        dfs(c);
+
+    ll cur = graph[a].front();
+
+    for (auto c : graph[a])
+        if (pointers[c]->size() > pointers[cur]->size())
+            cur = c;
+
+    pointers[a] = pointers[cur];
+
+    for (auto c : graph[a])
+        if (c != cur) {
+            for (auto color : *pointers[c])
+                pointers[a]->insert(color);
+            delete pointers[c];
+        }
+
+    pointers[a]->insert(col[a]);
+
+    res[a] = pointers[a]->size();
+}
 
 ///////////////////////////////////////////////////////////////////////////
 START VANYA START VANYA START VANYA START VANYA START VANYA START VANYA START VANYA START VANYA
