@@ -1,6 +1,5 @@
-This ideone code will use for teamNotebook in future
- 
-Defines, includes and namespaces(begin cpp file):
+// teamNotebook
+// Defines, includes and namespaces(begin cpp file):
  
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -18,8 +17,8 @@ Defines, includes and namespaces(begin cpp file):
  
 #define vvll vector <vll>
  
-#define rep(i, a, b) for(ll i = a; i < b; i++)
-#define per(i, a, b) for(ll i = (ll)a - 1; i >= b; --i)
+#define rep(i, a, b) for(ll i = (ll)a; i < (ll)b; i++)
+#define per(i, a, b) for(ll i = (ll)a - 1; i >= (ll)b; --i)
  
 #define endl "\n"
 #define pb push_back
