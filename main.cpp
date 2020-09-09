@@ -53,6 +53,8 @@ istream & operator >> (istream & in, vll & a) {
     for(auto &i : a) in >> i;
     return in;
 }
+
+const ll N = 2e5 + 5;
  
 Algorithms, data structure
  
@@ -3413,6 +3415,87 @@ void dfs(ll a) {
     pointers[a]->insert(col[a]);
 
     res[a] = pointers[a]->size();
+}
+///////////////////////////////////////////////////////////////////////////
+// @Den
+// zip of strongly connected components
+// code: https://codeforces.com/contest/1213/submission/92370737
+
+const ll N = 2e5 + 5;
+
+ll n;
+ll comps = 0;
+
+vll g[N], gr[N], gz[N]; // graph, reversed graph and zipped graph
+
+ll used[N];
+ll gl = 1;
+
+vll order, component;
+
+ll zipped[N];
+vll unzipped[N];
+
+void dfsTopSort(ll a) {
+    used[a] = gl;
+    for (auto c : g[a]) {
+        if (used[c] != gl) {
+            dfsTopSort(c);
+        }
+    }
+    order.pb(a);
+}
+
+void dfsComponent(ll a) {
+    used[a] = gl;
+    
+    component.pb(a);
+    for (auto c : gr[a]) {
+        if (used[c] != gl) {
+            dfsComponent(c);
+        }
+    }
+}
+
+void addComponent(vll &component) {
+    for (auto v : component) {
+        zipped[v] = n + comps;
+    }
+    
+    unzipped[n + comps] = component;
+    
+    comps++;
+}
+
+void zipGraph() {
+    rep(a, 0, n) {
+        if (used[a] != gl)
+            dfsTopSort(a);
+    }
+    
+    reverse(all(order));
+    
+    gl++;
+    
+    for (auto c : order) {
+        if (used[c] != gl) {
+            dfsComponent(c);
+            
+            addComponent(component);
+            component.clear();
+        }
+    }
+    
+    rep(v, 0, n) {
+        for (auto u : g[v]) {
+            ll zu = zipped[u];
+            ll zv = zipped[v];
+            
+            if (zv != zu) {
+                gz[zv].pb(zu);
+            }
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////
