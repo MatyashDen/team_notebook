@@ -2025,7 +2025,8 @@ ll md = 998244353;
 ll fact[N], revfact[N];
  
 ll cnk(ll n, ll k) {
-    if (n < k || k == 0) return 0;
+    if (k == 0) return 1;
+    if (n < k) return 0;
     return (1LL * fact[n] % md * revfact[n - k] % md * revfact[k] % md) % md;
 }
  
