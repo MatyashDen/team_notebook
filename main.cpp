@@ -1155,32 +1155,28 @@ bool psevdo(pll a, pll b, pll c) {
 @Bogdan
 Intersection line and circle
  
-pair<ld, ld> intersection(double x, double y, double x1, double y1, double xk, double yk, double r) {
-    double a1 = (y1 - y), b = (x - x1), c = -(x * (y1 - y) + y*(x - x1));
-    double c1 = a1 * xk + b * yk + c;
-    double x0 = xk - a1 * c1 / (a1 * a1 + b * b), y0 = yk - b * c1 / (a1 * a1 + b * b);
+pair<pair<ld, ld>, pair<ld, ld>> intersection(ll x, ll y, ll x1, ll y1, ll xk, ll yk, ll r) {
+    ll a1 = (y1 - y), b = (x - x1), c = -(x * (y1 - y) + y * (x - x1));
+    ll c1 = a1 * xk + b * yk + c;
+    ld x0 = xk - (ld)a1 * c1 / (ld)(a1 * a1 + b * b);
+    ld y0 = yk - (ld)b * c1 / (ld)(a1 * a1 + b * b);
     if(c1 * c1 > r * r * (a1 * a1 + b * b)){
-        return {2e9, 2e9};
+        return make_pair(make_pair(2e9, 2e9), make_pair(2e9, 2e9));
     }
     else if(c1 * c1 == r * r * (a1 * a1 + b * b)){
-        return {x0, y0};
+        return make_pair(make_pair(x0, y0), make_pair(x0, y0));
     }
     else {
-        double d = r*r - c1*c1/(a1*a1+b*b);
-        double mult = sqrt (d / (a1*a1+b*b));
-        double ax,ay,bx,by;
+        ld d = r * r - (ld)c1 * c1 / (ld)(a1 * a1 + b * b);
+        ld mult = sqrt (d / (ld)(a1 * a1 + b * b));
+        ld ax, ay, bx, by;
         ax = x0 + b * mult;
         bx = x0 - b * mult;
         ay = y0 - a1 * mult;
         by = y0 + a1 * mult;
-        pair<ld, ld> cur1 = {ay, ax};
-        pair<ld, ld> cur2 = {by, bx};
-        pair<ld, ld> cur = min(cur1, cur2);
-        if(cur.first == ay && cur.second == ax) {
-            return {ax, ay};
-        } else {
-            return {bx, by};
-        }
+        pair<ld, ld> cur1 = {ax, ay};
+        pair<ld, ld> cur2 = {bx, by};
+        return make_pair(cur1, cur2);
     }
 }
 ////////////////////////////////////////////////
