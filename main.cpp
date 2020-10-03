@@ -1,6 +1,5 @@
-This ideone code will use for teamNotebook in future
- 
-Defines, includes and namespaces(begin cpp file):
+// teamNotebook
+// Defines, includes and namespaces(begin cpp file):
  
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -18,8 +17,8 @@ Defines, includes and namespaces(begin cpp file):
  
 #define vvll vector <vll>
  
-#define rep(i, a, b) for(ll i = a; i < b; i++)
-#define per(i, a, b) for(ll i = (ll)a - 1; i >= b; --i)
+#define rep(i, a, b) for(ll i = (ll)a; i < (ll)b; i++)
+#define per(i, a, b) for(ll i = (ll)a - 1; i >= (ll)b; --i)
  
 #define endl "\n"
 #define pb push_back
@@ -54,6 +53,8 @@ istream & operator >> (istream & in, vll & a) {
     for(auto &i : a) in >> i;
     return in;
 }
+
+const ll N = 2e5 + 5;
  
 Algorithms, data structure
  
@@ -3369,6 +3370,129 @@ void dfs_bct(ll a = 0, ll p = -1) {
 
 void buildBCT() {
     dfs_bct();
+}
+///////////////////////////////////////////////////////////////////////////
+@Den
+// Small to large (number of different colors in subtree)
+
+vll graph[N];
+
+set <ll> *pointers[N];
+
+ll col[N], res[N];
+
+void dfs(ll a) {
+    if (graph[a].empty()) {
+        pointers[a] = new set <ll>();
+        pointers[a]->insert(col[a]);
+
+        res[a] = 1;
+
+        return;
+    }
+
+    for (auto c : graph[a])
+        dfs(c);
+
+    ll cur = graph[a].front();
+
+    for (auto c : graph[a])
+        if (pointers[c]->size() > pointers[cur]->size())
+            cur = c;
+
+    pointers[a] = pointers[cur];
+
+    for (auto c : graph[a])
+        if (c != cur) {
+            for (auto color : *pointers[c])
+                pointers[a]->insert(color);
+            delete pointers[c];
+        }
+
+    pointers[a]->insert(col[a]);
+
+    res[a] = pointers[a]->size();
+}
+///////////////////////////////////////////////////////////////////////////
+// @Den
+// zip of strongly connected components
+// code: https://codeforces.com/contest/1213/submission/92370737
+
+const ll N = 2e5 + 5;
+
+ll n;
+ll comps = 0;
+
+vll g[N], gr[N], gz[N]; // graph, reversed graph and zipped graph
+
+ll used[N];
+ll gl = 1;
+
+vll order, component;
+
+ll zipped[N];
+vll unzipped[N];
+
+void dfsTopSort(ll a) {
+    used[a] = gl;
+    for (auto c : g[a]) {
+        if (used[c] != gl) {
+            dfsTopSort(c);
+        }
+    }
+    order.pb(a);
+}
+
+void dfsComponent(ll a) {
+    used[a] = gl;
+    
+    component.pb(a);
+    for (auto c : gr[a]) {
+        if (used[c] != gl) {
+            dfsComponent(c);
+        }
+    }
+}
+
+void addComponent(vll &component) {
+    for (auto v : component) {
+        zipped[v] = n + comps;
+    }
+    
+    unzipped[n + comps] = component;
+    
+    comps++;
+}
+
+void zipGraph() {
+    rep(a, 0, n) {
+        if (used[a] != gl)
+            dfsTopSort(a);
+    }
+    
+    reverse(all(order));
+    
+    gl++;
+    
+    for (auto c : order) {
+        if (used[c] != gl) {
+            dfsComponent(c);
+            
+            addComponent(component);
+            component.clear();
+        }
+    }
+    
+    rep(v, 0, n) {
+        for (auto u : g[v]) {
+            ll zu = zipped[u];
+            ll zv = zipped[v];
+            
+            if (zv != zu) {
+                gz[zv].pb(zu);
+            }
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////
