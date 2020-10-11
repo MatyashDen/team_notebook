@@ -386,6 +386,72 @@ void erase (pitem &t, int Key)
 ////////////////////////////////////////////////
  
 ////////////////////////////////////////////////
+@Bohdan
+// Paralell binary search
+// Main function from problem: https://atcoder.jp/contests/agc002/tasks/agc002_d
+// Full solution: https://pastebin.com/rsYrychi
+
+int main() {
+    ll n, m;
+    cin >> n >> m;
+    vector<pll> edges;
+    rep(i, 0, m) {
+        ll a, b;
+        cin >> a >> b;
+        edges.pb(make_pair(a - 1, b - 1));
+    }
+    ll q;
+    cin >> q;
+    vector<Query> qs(q);
+    rep(i, 0, q) {
+        cin >> qs[i].x >> qs[i].y >> qs[i].z;
+        qs[i].x--;
+        qs[i].y--;
+    }
+
+    per(bit, 20, 0) {
+        rep(i, 0, n) {
+            add(i);
+        }
+        rep(i, 0, m) {
+            pos[i].clear();
+        }
+        rep(i, 0, q) {
+            ans[i] += (1 << bit);
+            if (ans[i] < m) {
+                pos[ans[i]].pb(i);
+            } else {
+                ans[i] -= (1 << bit);
+            }
+        }
+
+        rep(i, 0, m) {
+            for (auto id : pos[i]) {
+                auto query = qs[id];
+                ll sum = 0;
+                if (get(query.x) == get(query.y)) {
+                    sum = s[get(query.x)];
+                } else {
+                    sum = (s[get(query.x)] + s[get(query.y)]);
+                }
+                if (sum >= query.z) {
+                    ans[id] -= (1 << bit);
+                }
+            }
+            unite(edges[i].first, edges[i].second);
+        }
+    }
+
+    rep(i, 0, q) {
+        cout << ans[i] + 1 << endl;
+    }
+    return 0;
+}
+
+////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////
 @Bogdan
 Persistent Treap
 e-olymp.com/ru/submissions/6418681
