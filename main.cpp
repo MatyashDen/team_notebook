@@ -3959,3 +3959,30 @@ for ((i = 1; ; ++i)); do
     fi
 done
 
+s.sh + Checker by Karavaiev:
+
+clang++ -std=c++11 -stdlib=libc++ Doree/main.cpp -o main
+clang++ -std=c++11 -stdlib=libc++ Generator/main.cpp -o gen
+clang++ -std=c++11 -stdlib=libc++ BruteSolution/main.cpp -o brute
+clang++ -std=c++11 -stdlib=libc++ Checker/main.cpp -o check
+ 
+for ((i = 1; ; ++i)); do
+    echo $i
+    {
+        ./gen $i > int
+        cat int > out
+        ./main < int >> out
+        ./brute < int >> out
+    } || {
+        break
+    }
+    ./check < out
+    if [ $? -eq 0 ]
+    then
+      echo "Successfully created file"
+      cat out
+    else
+      cat out
+      break
+    fi
+done
