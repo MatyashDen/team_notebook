@@ -2364,22 +2364,43 @@ int main() {
  
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Fraction structure from Bohdan
+
 struct Fraction {
     ll num, denum;
  
     Fraction (ll newNum, ll newDenum) {
+        ll sign = (newNum * newDenum > 0);
         num = newNum / __gcd(newNum, newDenum);
         denum = newDenum / __gcd(newNum, newDenum);
+        if ((num * denum > 0) != (newNum * newDenum > 0)) {
+            num *= -1;
+        } 
+    }
+
+    bool operator < (const Fraction & right) const {
+        return num * right.denum < denum * right.num;
+    }
+
+    Fraction operator / (const Fraction & right) {
+        return Fraction(num * right.denum, denum * right.num);
+    }
+
+    Fraction operator - (const Fraction & right) {
+        return Fraction(num * right.denum - right.num * denum, denum * right.denum);
+    }
+
+    Fraction operator + (const Fraction & right) {
+        return Fraction(num * right.denum + right.num * denum, denum * right.denum);
+    }
+
+    Fraction operator * (const Fraction & right) {
+        return Fraction(num * right.num, denum * right.denum);
+    } 
+
+    bool operator == (const Fraction & right) const {
+        return num == right.num && denum == right.denum;
     }
 };
- 
-bool operator < (const Fraction & left, const Fraction & right) {
-    return left.num * right.denum < left.denum * right.num;
-}
- 
-Fraction operator / (const Fraction & left, const Fraction & right) {
-    return Fraction(left.num * right.denum, left.denum * right.num);
-}
 //////////////////////////////////////////////////////////////////////////////////////////////////
  
 //////////////////////////////////////////////////////////////////////////////////////////////////
