@@ -721,20 +721,32 @@ ll lca(ll a, ll b) {
  
 ////////////////////////////////////////////////
 @Bogdan
-Bor
+// Bor (trie)
+// tested here : https://atcoder.jp/contests/code-festival-2016-qualb/submissions/18099350
+
+const ll N = 4 * 1e5 + 5;
+ 
+struct Node {
+    ll cnt, flag;
+    ll next[30];
+};
+ 
+vector<Node> bor = vector<Node>({Node()});
  
 void add(string & t) {
     ll cur = 0;
     rep(i, 0, t.size()) {
-        if(cur) bor[cur].cnt++;
-        if(bor[cur].next[t[i]] == 0) {
-            bor.pb({0});
-            bor[cur].next[t[i]] = bor.size() - 1;
+        bor[cur].cnt++;
+        if(bor[cur].next[t[i] - 'a'] == 0) {
+            bor.pb(Node());
+            bor[cur].next[t[i] - 'a'] = bor.size() - 1;
             cur = bor.size() - 1;
         } else {
-            cur = bor[cur].next[t[i]];
+            cur = bor[cur].next[t[i] - 'a'];
         }
     }
+    bor[cur].flag = 1;
+    bor[cur].cnt++;
 }
 ////////////////////////////////////////////////
  
