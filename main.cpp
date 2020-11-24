@@ -1168,9 +1168,17 @@ inline ll read()
 ////////////////////////////////////////////////
 @Bogdan
 Queue with push_back, pop_front and find Min/Max O(1) complexity(average)
+tested on https://atcoder.jp/contests/cf16-tournament-round3-open/tasks/asaporo_d
+
+template <typename T, class F = function<T(const T&, const T&)>>
+struct QueueWithOperation {
  
-struct myQueue {
-    stack<pll> s1, s2;
+    F func;
+    T defVal;
+ 
+    QueueWithOperation(T def, const F& f) : func(f), defVal(def) {}
+ 
+    stack<pair<T, T> > s1, s2;
  
     int size() {
         return s1.size() + s2.size();
@@ -1180,12 +1188,12 @@ struct myQueue {
         return size() == 0;
     }
  
-    long long getMax() {
+    T getOperation() {
         if (isEmpty()) {
-            return -2e9;
+            return defVal;
         }
         if (!s1.empty() && !s2.empty()) {
-            return gcd(s1.top().second, s2.top().second);
+            return func(s1.top().second, s2.top().second);
         }
         if (!s1.empty()) {
             return s1.top().second;
@@ -1193,11 +1201,11 @@ struct myQueue {
         return s2.top().second;
     }
  
-    void push(long long val) {
+    void push(T val) {
         if (s2.empty()) {
             s2.push({val, val});
         } else {
-            s2.push({val, gcd(val, s2.top().second)});
+            s2.push({val, func(val, s2.top().second)});
         }
     }
  
@@ -1207,7 +1215,7 @@ struct myQueue {
                 if (s1.empty()) {
                     s1.push({s2.top().first, s2.top().first});
                 } else {
-                    s1.push({s2.top().first, gcd(s2.top().first, s1.top().second)});
+                    s1.push({s2.top().first, func(s2.top().first, s1.top().second)});
                 }
                 s2.pop();
             }
@@ -1216,6 +1224,10 @@ struct myQueue {
         s1.pop();
     }
 };
+ 
+// usage 
+const ll K = 305;
+vector<QueueWithOperation<ll> > dp(K, QueueWithOperation<ll>((ll)-1e18, [](ll i, ll j) { return max(i, j); }));
 ////////////////////////////////////////////////
  
 Geometry
