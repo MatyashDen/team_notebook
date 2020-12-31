@@ -69,52 +69,30 @@ Code
 ////////////////////////////////////////////////
  
 ////////////////////////////////////////////////
-@Bogdan
-SegmentTree
- 
-struct Node {
-    ll val;
- 
-    Node() : val(0LL) {}
-    Node(ll value) : val(value) {}
-};
- 
-const ll SZ = 2e5;
-ll a[SZ];
-Node t[4 * SZ];
-ll add[4 * SZ];
- 
-struct SegTree {
- 
-    ll n;
-    ll lazyOp;
-    // 1 - if sum lazyOp
-    // 2 - if max, min lazyOp
- 
-    ll passiveEl = 0LL; // getOp(a, passiveEl) = a
-    ll neitralEl = 0LL; // if(b != neitralEl) a = b;(for lazy)
- 
-    SegTree(ll sz, ll lazy) {
-        n = sz; lazyOp = lazy;
+@Bohdan
+//Segment tree
+// tested on https://judge.yosupo.jp/submission/34515
+
+template<typename T, class F = function<T(const T&, const T&)>>
+struct SegmentTree {
+    vector<T> elements;
+    vector<T> t;
+    ll size;
+    F func;
+
+    SegmentTree(vector<T> new_elements, const F& f): elements(new_elements), func(f) {
+        size = new_elements.size();
+        t.resize(4 * size);
+        build(0, 0, size - 1);
     }
- 
-    void input() {
-        rep(i, 0, n) {
-            cin >> a[i];
-        }
-    }
- 
-    Node getOp(Node left, Node right) {
-        return Node(max(left.val, right.val));
-    }
- 
+
     void pull(ll v) {
-        t[v] = getOp(t[v * 2 + 1], t[v * 2 + 2]);
+        t[v] = func(t[v * 2 + 1], t[v * 2 + 2]);
     }
- 
+
     void build(ll v, ll l, ll r) {
         if(l == r) {
-            t[v] = Node(a[l]);
+            t[v] = elements[l];
             return;
         }
  
@@ -124,97 +102,48 @@ struct SegTree {
  
         pull(v);
     }
- 
-    //////////////////////////////////////
-    //Lazy operation
-    ll pullChildOp(ll val, ll segSize) {
-        if(lazyOp == 1) return val * segSize;
-        else if(lazyOp == 2) return val;
-        assert(false);
-    }
- 
-    void push(ll v, ll l, ll m, ll r) {
-        // Change += on =
-        if(add[v] != neitralEl) {
-            add[v * 2 + 1] += add[v];
-            add[v * 2 + 2] += add[v];
- 
-            t[v * 2 + 1].val += pullChildOp(add[v], m - l + 1);
-            t[v * 2 + 2].val += pullChildOp(add[v], r - m);
- 
-            add[v] = neitralEl;
-        }
-    }
-    //////////////////////////////////////
- 
-    void updateSeg(ll v, ll tl, ll tr, ll l, ll r, ll val) {
-        if(l > r) return;
-        if(l == tl && r == tr) {
-            // Change += on =
-            t[v].val += pullChildOp(val, r - l + 1);
-            add[v] += val;
-            return;
-        }
+
+    T get(ll v, ll tl, ll tr, ll l, ll r) {
+        if(tl == l && r == tr) return t[v];
  
         ll tm = (tl + tr) / 2;
- 
-        push(v, tl, tm, tr);
- 
-        updateSeg(v * 2 + 1, tl, tm, l, min(tm, r), val);
-        updateSeg(v * 2 + 2, tm + 1, tr, max(tm + 1, l), r, val);
- 
-        pull(v);
+
+        if (r <= tm) {
+            return get(v * 2 + 1, tl, tm, l, r);
+        } else if (l > tm) {
+            return get(v * 2 + 2, tm + 1, tr, l, r);
+        } else {
+            return func(get(v * 2 + 1, tl, tm, l, tm),
+                        get(v * 2 + 2, tm + 1, tr, tm + 1, r));
+        }
     }
- 
-    void updateEl(ll v, ll tl, ll tr, ll pos, Node val) {
+
+    void updateElement(ll v, ll tl, ll tr, ll pos, T val) {
         if(tl == tr) {
-            t[v] = val;
+            t[v] += val;
             return;
         }
  
         ll tm = (tl + tr) / 2;
  
         if(pos <= tm) {
-            updateEl(v * 2 + 1, tl, tm, pos, val);
+            updateElement(v * 2 + 1, tl, tm, pos, val);
         } else {
-            updateEl(v * 2 + 2, tm + 1, tr, pos, val);
+            updateElement(v * 2 + 2, tm + 1, tr, pos, val);
         }
  
         pull(v);
     }
- 
-    Node get(ll v, ll tl, ll tr, ll l, ll r) {
- 
-        if(l > r) return passiveEl;
-        if(tl == l && r == tr) return t[v];
- 
-        ll tm = (tl + tr) / 2;
- 
-        if(lazyOp) push(v, tl, tm, tr);
-        return getOp(get(v * 2 + 1, tl, tm, l, min(tm, r)),
-                        get(v * 2 + 2, tm + 1, tr, max(tm + 1, l), r));
+    
+    T get(ll l, ll r) {
+        return get(0, 0, size - 1, l, r);
     }
- 
-    //Simply operations
-    void updateSeg(ll l, ll r, ll val) {
-        assert(lazyOp);
-        updateSeg(0, 0, n - 1, l, r, val);
+
+    void updateElement(ll pos, T val) {
+        updateElement(0, 0, size - 1, pos, val);
     }
- 
-    void updateEl(ll pos, ll val) {
-        updateEl(0, 0, n - 1, pos, val);
-    }
- 
-    Node get(ll l, ll r) {
-        return get(0, 0, n - 1, l, r);
-    }
- 
-    void build() {
-        build(0, 0, n - 1);
-    }
- 
 };
- 
+
 ////////////////////////////////////////////////
  
  
@@ -555,10 +484,13 @@ official.contest.yandex.com/mw2020prefinals/contest/18056/problems/
 full code for problem PersistentQueue:
 pastebin.com/JMxAT200
  
-const ll SZ = 4000000;
-ll N = 200010;
+const ll SZ = 50000000;
+ll N = 500010;
 ll L[SZ], R[SZ], val[SZ];
- 
+ll nxt[SZ];
+
+ll versions[SZ];
+
 struct PersistentArray {
  
     ll gl = 1;
@@ -593,19 +525,38 @@ struct PersistentArray {
  
     ll update(ll v, ll tl, ll tr, ll pos, ll el) {
         if (tl == tr) {
-            val[v] = el;
+            val[v] += el;
             return v;
         }
         ll tm = (tl + tr) / 2;
         if (pos <= tm) {
             L[v] = cop(L[v]);
-            return update(L[v], tl, tm, pos, el);
+            ll ind = update(L[v], tl, tm, pos, el);
+            val[v] = val[L[v]] + val[R[v]];
+            return ind;
         } else {
             R[v] = cop(R[v]);
-            return update(R[v], tm + 1, tr, pos, el);
+            ll ind = update(R[v], tm + 1, tr, pos, el);
+            val[v] = val[L[v]] + val[R[v]];
+            return ind;
         }
     }
- 
+
+    ll sum(ll v, ll tl, ll tr, ll l, ll r) {
+        if (l > r) return 0LL;
+        if (l == tl && r == tr) return val[v];
+        ll tm = (tl + tr) / 2;
+        return sum(L[v], tl, tm, l, min(tm, r)) + sum(R[v], tm + 1, tr, max(tm + 1, l), r);
+    }
+
+    ll cascadeDescent(ll v, ll k) {
+        if (k == 0) return v;
+        if (val[L[v]] <= k) {
+            return cascadeDescent(L[v], k);
+        } else {
+            return cascadeDescent(R[v], val[v] - val[L[v]]);
+        }
+    }
  
     ll query(ll v, ll tl, ll tr, ll pos) {
         while (tl < tr) {
