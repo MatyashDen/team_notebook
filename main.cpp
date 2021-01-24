@@ -585,47 +585,78 @@ struct PersistentArray {
 ////////////////////////////////////////////////
  
 ////////////////////////////////////////////////
-@Bogdan
-Graphs find bridges
-void dfs(int v, int p){
+// @Bogdan
+// Find bridges in graph
+// tested here https://vjudge.net/contest/419195#problem/E (Matvej graph contest)
+
+const ll N = 20000 + 5;
+vector<pll> g[N];
+ll s[N], up[N];
+vll bridges;
+ll timer = 1;
+
+void dfs(ll v, ll p){
     s[v] = up[v] = timer++;
     for(auto vertex : g[v]){
-        if (vertex == p) continue;
-        if(s[vertex] == 0){
-            dfs(vertex, v);
-            up[v] = min(up[v], up[vertex]);
-            if(up[vertex] > s[v]){
-                isBridge[getId(vertex, v)] = 1;
+        if (vertex.second == p) continue;
+        if(s[vertex.first] == 0){
+            dfs(vertex.first, vertex.second);
+            up[v] = min(up[v], up[vertex.first]);
+            if (up[vertex.first] > s[v]){
+                bridges.pb(vertex.second);
             }
         } else {
-            up[v] = min(up[v], s[vertex]);
+            up[v] = min(up[v], s[vertex.first]);
         }
     }
+}
+
+void find_bridges(ll n) {
+   rep(i, 0, n) {
+        if (!s[i]) dfs(i, -1);
+    } 
 }
 ////////////////////////////////////////////////
  
 ////////////////////////////////////////////////
-@Bogdan
-Graphs find cut vertices
+// @Bogdan
+// find articulation vertices in graph
+// tested on https://vjudge.net/contest/419195#problem/F (Matvej graph contest)
  
-void dfs(int v, int p){
-    int cnt = 0;
-    s[v] = up[v] = timer ++;
+const ll N = 20000 + 5;
+vll g[N];
+ll s[N], up[N];
+vll articulation_points;
+ll timer = 1;
+
+void dfs(ll v, ll p){
+    ll cnt = 0;
+    s[v] = up[v] = timer++;
+
+    int is_art_point = 0;
+
     for(auto vertex : g[v]){
-        if(s[vertex] == 0){
-            cnt ++;
+        if (s[vertex] == 0){
+            cnt++;
             dfs(vertex, v);
             up[v] = min(up[v], up[vertex]);
-            if(up[vertex] >= s[v] && p != -1){
-                artPoints.insert(v);
+
+            if (up[vertex] >= s[v] && p != -1){
+                is_art_point = 1;
             }
-        }
-        else if(vertex != p){
+        } else if (vertex != p) {
             up[v] = min(up[v], s[vertex]);
         }
     }
-    if(p == -1 && cnt > 1){
-        artPoints.insert(v);
+
+    if ((p == -1 && cnt > 1) || is_art_point){
+        articulation_points.pb(v + 1);
+    }
+}
+
+void find_art_points(ll n) {
+    rep(i, 0, n) {
+        if (!s[i]) dfs(i, -1);
     }
 }
 ////////////////////////////////////////////////
