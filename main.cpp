@@ -44,12 +44,14 @@ using namespace std;
 using namespace __gnu_cxx;
 using namespace __gnu_pbds;
  
-ostream & operator << (ostream & out, vll & a) {
+template<typename T>
+ostream & operator << (ostream & out, vector<T> & a) {
     for(auto i : a) out << i << " ";
     return out;
 }
  
-istream & operator >> (istream & in, vll & a) {
+template<typename T>
+istream & operator >> (istream & in, vector<T> & a) {
     for(auto &i : a) in >> i;
     return in;
 }
