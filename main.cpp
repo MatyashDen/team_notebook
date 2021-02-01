@@ -1189,7 +1189,7 @@ struct QueueWithOperation {
         if (s2.empty()) {
             s2.push({val, val});
         } else {
-            s2.push({val, func(val, s2.top().second)});
+            s2.push({val, func(s2.top().second, val)});
         }
     }
  
