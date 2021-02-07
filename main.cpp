@@ -1549,22 +1549,22 @@ ll binmul(ll a, ll b, ll m) {
  
     return res;
 }
- 
+
 ll binpow(ll a, ll b, ll m) {
     ll res = 1;
  
     while (b) {
         if (b & 1)
-            res = mul(res, a, m);
+            res = binmul(res, a, m);
  
-        a = mul(a, a, m);
+        a = binmul(a, a, m);
  
         b >>= 1;
     }
  
     return res;
 }
- 
+
 vvll mul(vvll a, vvll b) {
     ll N = a.size();
     ll K = b.size();
