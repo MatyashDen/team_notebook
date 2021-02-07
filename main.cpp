@@ -1605,6 +1605,24 @@ vvll binpow(vvll a, ll b) {
  
     return ans;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// @Dan
+// Ferma prime test. O(log(N))
+
+bool ferma(ll x){
+    if(x == 2)
+        return true;
+    srand(time(NULL));
+    rep(i, 0, 50) {
+        ll a = (rand() % (x - 2)) + 2;
+        if (gcd(a, x) != 1)
+            return false;
+        if (binpow(a, x - 1, x) != 1)
+            return false;
+    }
+    return true;
+}
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 @Bogdan
