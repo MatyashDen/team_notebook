@@ -1531,20 +1531,25 @@ ll sum(ll x, ll y) {
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 @Dan
-// binpow and binmul + matrix
- 
+// binpow and binmul + add by modulo + matrix
+
+ll add(ll a, ll b, ll m) {
+    ll ans = a + b;
+    if (ans >= m) ans -= m;
+    if (ans < 0) ans += m;
+    return ans;
+}
+
 ll binmul(ll a, ll b, ll m) {
     ll res = 0;
  
     while (b) {
         if (b & 1)
-            res = (res + a) % m;
+            res = add(res, a, m);
  
-        a <<= 1;
+        a = add(a, a, m);
  
         b >>= 1;
- 
-        a %= m;
     }
  
     return res;
