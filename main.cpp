@@ -2110,6 +2110,55 @@ struct Matrix {
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 @Bohdan
+// DSU struct
+// https://codeforces.com/contest/1559/submission/125984853
+
+struct DSU {
+	vll p, s;
+	ll n;
+	
+	DSU(ll sz) {
+		n = sz;
+		p.resize(sz);
+		s.resize(sz);
+		
+		rep(i, 0, n) {
+			p[i] = i;
+			s[i] = 1;
+		}
+	}
+	 
+	ll get(ll v) {
+		return p[v] == v ? v : p[v] = get(p[v]);
+	}
+	
+	void unite(ll a, ll b) {
+		a = get(a);
+		b = get(b);
+	 
+		if (a != b) {
+			if (s[a] > s[b])
+				swap(a, b);
+	 
+			p[a] = b;
+			s[b] += s[a];
+		}
+	}
+	
+	ll can_unite(ll a, ll b) {
+		a = get(a);
+		b = get(b);
+	 
+		if (a != b) return 1;
+		else return 0;
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+@Bohdan
 // fact and revfact by modulo
 https://c...content-available-to-author-only...s.com/contest/1312/submission/73322032
  
