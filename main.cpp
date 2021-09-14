@@ -3317,7 +3317,7 @@ private:
 
     ll query(ll l, ll r, ll ql, ll qr, ll it) {
         if (ql > qr)
-            return -inf;
+            return inf;
         if (l == ql && r == qr) {
             return t[it];
         }
