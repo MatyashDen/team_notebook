@@ -1606,6 +1606,34 @@ vvll binpow(vvll a, ll b) {
     return ans;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @Dan
+// cnk
+
+ll f[N];
+ll rf[N];
+
+ll mul(ll a, ll b) {
+    return (a * b) % mod;
+}
+
+void precalc() {
+    f[0] = 1;
+    
+    rep(i, 1, N - 1) {
+        f[i] = mul(f[i - 1], i);
+    }
+    
+    rf[N - 2] = binpow(f[N - 2], mod - 2);
+    per(i, N - 2, 0) {
+        rf[i] = mul(i + 1, rf[i + 1]);
+    }
+}
+
+ll cnk(ll n, ll k) {
+    return mul(mul(f[n], rf[k]), rf[n - k]);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // @Dan
 // Ferma prime test. O(log(N))
